@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import android.telephony.SubscriptionInfo
 import android.telephony.SubscriptionManager
 import android.widget.Toast
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -40,24 +39,36 @@ fun DashboardScreen(navController: NavController) {
     var simList by remember { mutableStateOf(emptyList<SubscriptionInfo>()) }
     var selectedSim by remember { mutableStateOf(-1) }
 
+    // 🔹 Load user info once
     LaunchedEffect(Unit) {
-        val snap = db.collection("users").limit(1).get().await()
-        if (!snap.isEmpty) {
-            val doc = snap.documents[0]
-            val u = doc.toObject<UserModel>()
-            phone = u?.phone ?: doc.id
-            name = u?.name ?: ""
-            balance = u?.balance ?: 0.0
-            dailySent = (u?.dailySent ?: 0L).toInt()
-            dailyLimit = (u?.dailyLimit ?: 50L).toInt()
-            spins = (u?.spins ?: 0L).toInt()
-            selectedSim = (u?.simId ?: -1L).toInt()
+        try {
+            val snap = db.collection("users").limit(1).get().await()
+            if (!snap.isEmpty) {
+                val doc = snap.documents[0]
+                val u = doc.toObject<UserModel>()
+                phone = u?.phone ?: doc.id
+                name = u?.name ?: ""
+                balance = u?.balance ?: 0.0
+                dailySent = (u?.dailySent ?: 0L).toInt()
+                dailyLimit = (u?.dailyLimit ?: 50L).toInt()
+                spins = (u?.spins ?: 0L).toInt()
+                selectedSim = (u?.simId ?: -1L).toInt()
+            }
+        } catch (e: Exception) {
+            Toast.makeText(ctx, "Error loading user: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController = navController, activeRoute = "dashboard") },
-        topBar = { CenterAlignedTopAppBar(title = { Text("Dashboard") }) }
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text("Dashboard", style = MaterialTheme.typography.titleLarge) }
+            )
+        },
+        bottomBar = {
+            // ✅ fixed parameter name: only navController needed
+            BottomNavigationBar(navController = navController)
+        }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -67,26 +78,54 @@ fun DashboardScreen(navController: NavController) {
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            Text("Welcome, $name", style = MaterialTheme.typography.titleLarge)
+            Text("Welcome, $name 👋", style = MaterialTheme.typography.headlineSmall)
             Spacer(Modifier.height(8.dp))
-            Text("Balance: ₹${String.format("%.2f", balance)}")
-            Text("Sent today: $dailySent / $dailyLimit")
-            Spacer(Modifier.height(12.dp))
+            Text("📱 Phone: $phone", style = MaterialTheme.typography.bodyMedium)
+            Spacer(Modifier.height(8.dp))
+            Text("💰 Balance: ₹${String.format("%.2f", balance)}", style = MaterialTheme.typography.bodyLarge)
+            Text("📤 Sent today: $dailySent / $dailyLimit", style = MaterialTheme.typography.bodyLarge)
 
-            Button(onClick = {
-                val work = OneTimeWorkRequestBuilder<SmsWorker>().build()
-                WorkManager.getInstance(ctx)
-                    .enqueueUniqueWork("send_one_sms", ExistingWorkPolicy.APPEND_OR_REPLACE, work)
-                Toast.makeText(ctx, "Scheduled SMS worker", Toast.LENGTH_SHORT).show()
-            }) {
+            Spacer(Modifier.height(20.dp))
+
+            Button(
+                onClick = {
+                    val work = OneTimeWorkRequestBuilder<SmsWorker>().build()
+                    WorkManager.getInstance(ctx)
+                        .enqueueUniqueWork("send_one_sms", ExistingWorkPolicy.APPEND_OR_REPLACE, work)
+                    Toast.makeText(ctx, "SMS scheduled successfully ✅", Toast.LENGTH_SHORT).show()
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Text("Start Sending (Auto)")
             }
 
-            Spacer(Modifier.height(12.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(onClick = { navController.navigate("spin") }) { Text("Spin ($spins)") }
-                Button(onClick = { navController.navigate("profile") }) { Text("Profile") }
-                Button(onClick = { navController.navigate("withdraw") }) { Text("Withdraw") }
+            Spacer(Modifier.height(20.dp))
+
+            // 🔸 Navigation buttons
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Button(
+                    onClick = { navController.navigate("spin") },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("🎡 Spin ($spins)")
+                }
+
+                Button(
+                    onClick = { navController.navigate("profile") },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("👤 Profile")
+                }
+
+                Button(
+                    onClick = { navController.navigate("withdraw") },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("💵 Withdraw")
+                }
             }
         }
     }

@@ -1,4 +1,5 @@
 package com.rupeedesk7.smsapp.ui
+
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
@@ -41,74 +42,147 @@ fun DashboardScreen(navController: NavController) {
     var selectedSim by remember { mutableStateOf(-1) }
     var smsPermissionGranted by remember { mutableStateOf(false) }
 
-    // permission launchers
-    val smsLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+    // Permission launchers
+    val smsLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
         smsPermissionGranted = granted
-        if (!granted) Toast.makeText(ctx, "SEND_SMS permission denied", Toast.LENGTH_SHORT).show()
+        if (!granted) {
+            Toast.makeText(ctx, "SEND_SMS permission denied", Toast.LENGTH_SHORT).show()
+        }
     }
-    val phoneLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (!granted) Toast.makeText(ctx, "Phone permission denied", Toast.LENGTH_SHORT).show()
+
+    val phoneLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (!granted) {
+            Toast.makeText(ctx, "Phone permission denied", Toast.LENGTH_SHORT).show()
+        }
     }
 
     LaunchedEffect(Unit) {
-        smsPermissionGranted = ContextCompat.checkSelfPermission(ctx, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED
-        // load user prototype
+        smsPermissionGranted = ContextCompat.checkSelfPermission(
+            ctx,
+            Manifest.permission.SEND_SMS
+        ) == PackageManager.PERMISSION_GRANTED
+
+        // Load one user (prototype)
         val snap = db.collection("users").limit(1).get().await()
         if (!snap.isEmpty) {
             val doc = snap.documents[0]
             val u = doc.toObject<UserModel>()
-            phone = u?.phone ?: doc.id; name = u?.name ?: ""
-            balance = u?.balance ?: 0.0; dailySent = (u?.dailySent ?: 0L).toInt()
-            dailyLimit = (u?.dailyLimit ?: 50L).toInt(); spins = (u?.spins ?: 0L).toInt()
+            phone = u?.phone ?: doc.id
+            name = u?.name ?: ""
+            balance = u?.balance ?: 0.0
+            dailySent = (u?.dailySent ?: 0L).toInt()
+            dailyLimit = (u?.dailyLimit ?: 50L).toInt()
+            spins = (u?.spins ?: 0L).toInt()
             selectedSim = (u?.simId ?: -1L).toInt()
         }
-        // request phone state to list SIMs if already granted
-        if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+
+        // Request SIM list if phone permission granted
+        if (ContextCompat.checkSelfPermission(
+                ctx,
+                Manifest.permission.READ_PHONE_STATE
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             val sm = ctx.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
             simList = sm.activeSubscriptionInfoList ?: emptyList()
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(16.dp),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.Start
+    ) {
         Text("Welcome, $name", style = MaterialTheme.typography.h6)
         Spacer(Modifier.height(8.dp))
         Text("Balance: ₹${String.format("%.2f", balance)}")
         Text("Sent today: $dailySent / $dailyLimit")
         Spacer(Modifier.height(12.dp))
 
-        Row { Button(onClick = { if (!smsPermissionGranted) smsLauncher.launch(Manifest.permission.SEND_SMS) else Toast.makeText(ctx, "SEND_SMS already granted", Toast.LENGTH_SHORT).show() }) { Text("Grant SEND_SMS") }
-              Spacer(Modifier.width(8.dp))
-              Button(onClick = { phoneLauncher.launch(Manifest.permission.READ_PHONE_STATE) }) { Text("Grant READ_PHONE_STATE") } }
+        // Permission Buttons
+        Row {
+            Button(onClick = {
+                if (!smsPermissionGranted) {
+                    smsLauncher.launch(Manifest.permission.SEND_SMS)
+                } else {
+                    Toast.makeText(ctx, "SEND_SMS already granted", Toast.LENGTH_SHORT).show()
+                }
+            }) {
+                Text("Grant SEND_SMS")
+            }
+
+            Spacer(Modifier.width(8.dp))
+
+            Button(onClick = {
+                phoneLauncher.launch(Manifest.permission.READ_PHONE_STATE)
+            }) {
+                Text("Grant READ_PHONE_STATE")
+            }
+        }
 
         Spacer(Modifier.height(12.dp))
         Text("Select SIM to use:")
         if (simList.isEmpty()) {
             Text("No SIM info available or permission not granted.")
         } else {
-            simList.forEach { s -> Row(modifier = Modifier.fillMaxWidth().padding(4.dp).clickable {
-                        selectedSim = s.subscriptionId
-                        // save to user's doc (prototype uses first user id)
-                        if (phone.isNotBlank()) db.collection("users").document(phone).update("simId", selectedSim)
-                        Toast.makeText(ctx, "Selected SIM: ${'$'}{s.carrierName}", Toast.LENGTH_SHORT).show()
-                    }) { Text(text = "${'$'}{s.carrierName} (${ '$' }{s.number ?: "hidden"})") } }
+            simList.forEach { s ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(4.dp)
+                        .clickable {
+                            selectedSim = s.subscriptionId
+                            if (phone.isNotBlank()) {
+                                db.collection("users").document(phone).update("simId", selectedSim)
+                            }
+                            Toast.makeText(
+                                ctx,
+                                "Selected SIM: ${s.carrierName}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                ) {
+                    // ✅ Fixed the string template quotes issue here
+                    Text(text = "${s.carrierName} (${s.number ?: "hidden"})")
+                }
+            }
         }
 
         Spacer(Modifier.height(12.dp))
+
+        // Worker trigger
         Button(onClick = {
             if (!smsPermissionGranted) {
-                Toast.makeText(ctx, "Please grant SEND_SMS first", Toast.LENGTH_LONG).show(); return@Button
+                Toast.makeText(ctx, "Please grant SEND_SMS first", Toast.LENGTH_LONG).show()
+                return@Button
             }
-            // schedule worker (one-time) as a foreground-capable worker
-            val work = OneTimeWorkRequestBuilder<SmsWorker>().build()
-            WorkManager.getInstance(ctx).enqueueUniqueWork("rupeedesk7_send_one", ExistingWorkPolicy.APPEND_OR_REPLACE, work)
-            Toast.makeText(ctx, "Scheduled SMS worker", Toast.LENGTH_SHORT).show()
-        }) { Text("Start Sending (Auto)") }
 
-        Spacer(modifier = Modifier.height(12.dp))
+            val work = OneTimeWorkRequestBuilder<SmsWorker>().build()
+            WorkManager.getInstance(ctx).enqueueUniqueWork(
+                "rupeedesk7_send_one",
+                ExistingWorkPolicy.REPLACE,
+                work
+            )
+            Toast.makeText(ctx, "Scheduled SMS worker", Toast.LENGTH_SHORT).show()
+        }) {
+            Text("Start Sending (Auto)")
+        }
+
+        Spacer(Modifier.height(12.dp))
+
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = { navController.navigate("spin") }) { Text("Spin Wheel ($spins)") }
-            Button(onClick = { navController.navigate("profile") }) { Text("Profile") }
-            Button(onClick = { navController.navigate("withdraw") }) { Text("Withdraw") }
+            Button(onClick = { navController.navigate("spin") }) {
+                Text("Spin Wheel ($spins)")
+            }
+            Button(onClick = { navController.navigate("profile") }) {
+                Text("Profile")
+            }
+            Button(onClick = { navController.navigate("withdraw") }) {
+                Text("Withdraw")
+            }
         }
     }
 }

@@ -1,50 +1,51 @@
 package com.rupeedesk7.smsapp.ui.components
 
-import androidx.compose.foundation.layout.height
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomNavigationBar(navController: NavController, activeRoute: String) {
+fun BottomNavigationBar(
+    navController: NavController,
+    activeRoute: String
+) {
     NavigationBar(
-        modifier = Modifier.height(64.dp),
-        containerColor = MaterialTheme.colorScheme.primaryContainer
+        modifier = Modifier.fillMaxWidth(),
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.primary
     ) {
-        NavigationBarItem(
-            selected = activeRoute == "sms",
-            onClick = { navController.navigate("sms") },
-            icon = { Icon(Icons.Filled.SmartToy, contentDescription = null) },
-            label = { Text("SMS") }
+        val items = listOf(
+            NavItem("dashboard", "Home", Icons.Filled.Home),
+            NavItem("sms", "SMS", Icons.Filled.Send),
+            NavItem("tasks", "Tasks", Icons.Filled.Task),
+            NavItem("withdraw", "Wallet", Icons.Filled.AccountBalanceWallet),
+            NavItem("profile", "Profile", Icons.Filled.Person)
         )
-        NavigationBarItem(
-            selected = activeRoute == "tasks",
-            onClick = { navController.navigate("tasks") },
-            icon = { Icon(Icons.Filled.Task, contentDescription = null) },
-            label = { Text("Tasks") }
-        )
-        NavigationBarItem(
-            selected = activeRoute == "wallet",
-            onClick = { navController.navigate("wallet") },
-            icon = { Icon(Icons.Filled.AccountBalanceWallet, contentDescription = null) },
-            label = { Text("Wallet") }
-        )
-        NavigationBarItem(
-            selected = activeRoute == "spin",
-            onClick = { navController.navigate("spin") },
-            icon = { Icon(Icons.Filled.Games, contentDescription = null) },
-            label = { Text("Spin") }
-        )
-        NavigationBarItem(
-            selected = activeRoute == "profile",
-            onClick = { navController.navigate("profile") },
-            icon = { Icon(Icons.Filled.Person, contentDescription = null) },
-            label = { Text("Profile") }
-        )
+
+        items.forEach { item ->
+            NavigationBarItem(
+                selected = activeRoute == item.route,
+                onClick = {
+                    if (activeRoute != item.route) {
+                        navController.navigate(item.route) {
+                            popUpTo("dashboard") { inclusive = false }
+                            launchSingleTop = true
+                        }
+                    }
+                },
+                icon = { Icon(item.icon, contentDescription = item.label) },
+                label = { Text(item.label) }
+            )
+        }
     }
 }
+
+data class NavItem(
+    val route: String,
+    val label: String,
+    val icon: androidx.compose.ui.graphics.vector.ImageVector
+)

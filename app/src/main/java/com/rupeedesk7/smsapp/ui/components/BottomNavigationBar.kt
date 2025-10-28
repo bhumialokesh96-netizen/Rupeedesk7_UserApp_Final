@@ -1,37 +1,49 @@
 package com.rupeedesk7.smsapp.ui.components
 
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomNavigationBar(navController: NavController) {
-    NavigationBar(containerColor = MaterialTheme.colorScheme.primaryContainer) {
+fun BottomNavigationBar(navController: NavController, activeRoute: String) {
+    NavigationBar(
+        modifier = Modifier.height(64.dp),
+        containerColor = MaterialTheme.colorScheme.primaryContainer
+    ) {
         NavigationBarItem(
-            selected = false,
+            selected = activeRoute == "sms",
             onClick = { navController.navigate("sms") },
-            icon = { Icon(Icons.Filled.SmartToy, contentDescription = "SMS") },
+            icon = { Icon(Icons.Filled.SmartToy, contentDescription = null) },
             label = { Text("SMS") }
         )
         NavigationBarItem(
-            selected = false,
-            onClick = { navController.navigate("task") },
-            icon = { Icon(Icons.Filled.Task, contentDescription = "Tasks") },
-            label = { Text("Task") }
+            selected = activeRoute == "tasks",
+            onClick = { navController.navigate("tasks") },
+            icon = { Icon(Icons.Filled.Task, contentDescription = null) },
+            label = { Text("Tasks") }
         )
         NavigationBarItem(
-            selected = false,
-            onClick = { navController.navigate("withdraw") },
-            icon = { Icon(Icons.Filled.AccountBalanceWallet, contentDescription = "Withdraw") },
+            selected = activeRoute == "wallet",
+            onClick = { navController.navigate("wallet") },
+            icon = { Icon(Icons.Filled.AccountBalanceWallet, contentDescription = null) },
             label = { Text("Wallet") }
         )
         NavigationBarItem(
-            selected = false,
+            selected = activeRoute == "spin",
+            onClick = { navController.navigate("spin") },
+            icon = { Icon(Icons.Filled.Games, contentDescription = null) },
+            label = { Text("Spin") }
+        )
+        NavigationBarItem(
+            selected = activeRoute == "profile",
             onClick = { navController.navigate("profile") },
-            icon = { Icon(Icons.Filled.Person, contentDescription = "Profile") },
+            icon = { Icon(Icons.Filled.Person, contentDescription = null) },
             label = { Text("Profile") }
         )
     }

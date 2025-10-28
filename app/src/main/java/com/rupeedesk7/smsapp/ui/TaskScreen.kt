@@ -16,13 +16,8 @@ import com.rupeedesk7.smsapp.ui.components.BottomNavigationBar
 @Composable
 fun TaskScreen(navController: NavController) {
     Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("Task Center", style = MaterialTheme.typography.titleLarge) }
-            )
-        },
-        // ✅ Removed activeRoute (not supported in your BottomNavigationBar)
-        bottomBar = { BottomNavigationBar(navController = navController) }
+        topBar = { CenterAlignedTopAppBar(title = { Text("Task Center") }) },
+        bottomBar = { BottomNavigationBar(navController = navController, activeRoute = "tasks") }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -31,31 +26,18 @@ fun TaskScreen(navController: NavController) {
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            Text(
-                text = "Available Tasks",
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.titleMedium
-            )
+            Text("Available Tasks", fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(8.dp))
 
             Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer
-                ),
-                modifier = Modifier.fillMaxWidth()
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
             ) {
                 Column(Modifier.padding(16.dp)) {
                     Text("Invite Friends", fontWeight = FontWeight.Medium)
-                    Text("Earn ₹5 per referral", style = MaterialTheme.typography.bodyMedium)
+                    Text("Earn ₹5 per referral")
                     Spacer(Modifier.height(8.dp))
-
-                    Button(onClick = {
-                        // TODO: Navigate or trigger invite action
-                    }) {
-                        Icon(
-                            imageVector = Icons.Filled.Task,
-                            contentDescription = "Task"
-                        )
+                    Button(onClick = { /* navigate or trigger */ }) {
+                        Icon(Icons.Filled.Task, contentDescription = null)
                         Spacer(Modifier.width(8.dp))
                         Text("Start Task")
                     }

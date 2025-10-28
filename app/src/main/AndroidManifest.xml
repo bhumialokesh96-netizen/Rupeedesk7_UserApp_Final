@@ -1,20 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Core permissions -->
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <application android:allowBackup="true" android:label="Rupeedesk7" android:theme="@style/Theme.App">
-        <activity android:name=".MainActivity" android:exported="true">
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <application
+        android:allowBackup="true"
+        android:label="Rupeedesk7"
+        android:theme="@style/Theme.App"
+        android:supportsRtl="true">
+
+        <!-- Launcher Activity -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:configChanges="orientation|keyboardHidden|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <receiver android:name=".worker.SmsStatusReceiver" android:exported="false" />
-        <receiver android:name=".worker.SmsDeliveredReceiver" android:exported="false" />
+        <!-- Optional: Firebase or splash configuration could go here -->
+
+        <!-- Receivers to track SMS sent/delivery status -->
+        <receiver
+            android:name=".worker.SmsStatusReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".worker.SmsDeliveredReceiver"
+            android:exported="false" />
+
+        <!-- Required so WorkManager foreground service can run -->
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+
     </application>
 </manifest>

@@ -18,10 +18,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.rupeedesk7.smsapp.ui.components.BottomNavigationBar
+import kotlin.math.roundToInt
 import kotlin.random.Random
+import com.rupeedesk7.smsapp.ui.components.BottomNavigationBar
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SpinWheelScreen(navController: NavController) {
     var isSpinning by remember { mutableStateOf(false) }
@@ -29,7 +29,7 @@ fun SpinWheelScreen(navController: NavController) {
     var prize by remember { mutableStateOf("Tap Spin to Start!") }
 
     val spinAnim = animateFloatAsState(
-        targetValue = if (isSpinning) rotation + 1440f else rotation,
+        targetValue = if (isSpinning) rotation else rotation,
         animationSpec = tween(4000, easing = FastOutSlowInEasing),
         finishedListener = {
             isSpinning = false
@@ -39,19 +39,12 @@ fun SpinWheelScreen(navController: NavController) {
     )
 
     Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("Daily Spin", color = Color.White) },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color(0xFF1DB954)
-                )
-            )
-        },
-        bottomBar = { BottomNavigationBar(navController = navController) }
-    ) { innerPadding ->
+        topBar = { CenterAlignedTopAppBar(title = { Text("Daily Spin") }) },
+        bottomBar = { BottomNavigationBar(navController = navController, activeRoute = "spin") }
+    ) { inner ->
         Column(
             modifier = Modifier
-                .padding(innerPadding)
+                .padding(inner)
                 .fillMaxSize()
                 .background(Color(0xFFF7F9FF))
                 .padding(16.dp),
@@ -68,7 +61,7 @@ fun SpinWheelScreen(navController: NavController) {
                         Color(0xFF9C27B0),
                         Color(0xFFFFC107)
                     )
-                    rotate(spinAnim.value) {
+                    rotate(rotation) {
                         for (i in 0..5) {
                             drawArc(
                                 color = colors[i],
@@ -84,22 +77,17 @@ fun SpinWheelScreen(navController: NavController) {
             }
 
             Spacer(Modifier.height(24.dp))
-
             Button(
                 onClick = {
                     if (!isSpinning) {
                         isSpinning = true
-                        rotation += 360f * Random.nextInt(4, 8)
+                        val extra = 360f * Random.nextInt(4, 8)
+                        rotation += extra
                     }
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9800)),
                 shape = RoundedCornerShape(50)
             ) {
-                Text(
-                    if (isSpinning) "Spinning..." else "Tap to Spin 🎡",
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold
-                )
+                Text(if (isSpinning) "Spinning..." else "Tap to Spin 🎡")
             }
 
             Spacer(Modifier.height(24.dp))

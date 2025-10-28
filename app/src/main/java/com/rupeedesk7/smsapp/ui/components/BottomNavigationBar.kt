@@ -1,22 +1,24 @@
 package com.rupeedesk7.smsapp.ui.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.SmartToy
-import androidx.compose.material.icons.filled.Task
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import com.rupeedesk7.smsapp.R
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.SmartToy
+import androidx.compose.material.icons.filled.Task
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Mail
+import androidx.compose.material.icons.filled.Wallet
 
 @Composable
 fun BottomNavigationBar(active: String, navController: NavController) {

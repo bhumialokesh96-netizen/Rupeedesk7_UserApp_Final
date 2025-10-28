@@ -1,8 +1,6 @@
 package com.rupeedesk7.smsapp.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
@@ -13,17 +11,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.rupeedesk7.smsapp.ui.components.BottomNavigationBar
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(navController: NavController) {
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController) }
+        bottomBar = { BottomNavigationBar(navController = navController, activeRoute = "profile") },
+        topBar = { CenterAlignedTopAppBar(title = { Text("My Profile") }) }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -33,7 +32,13 @@ fun ProfileScreen(navController: NavController) {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Earn111", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1B5E20))
+            Text(
+                "Earn111",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF1B5E20)
+            )
+
             Spacer(Modifier.height(20.dp))
 
             // User info card
@@ -42,18 +47,27 @@ fun ProfileScreen(navController: NavController) {
                 colors = CardDefaults.cardColors(containerColor = Color(0xFF4CAF50)),
                 shape = MaterialTheme.shapes.medium
             ) {
-                Column(Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Box(
                         modifier = Modifier
                             .size(80.dp)
                             .clip(CircleShape)
                             .background(Color.White)
                     )
+
                     Spacer(Modifier.height(8.dp))
                     Text("+91 •••••• 7890", color = Color.White, fontSize = 18.sp)
                     Text("VIP 8", color = Color.Yellow, fontSize = 14.sp)
                     Spacer(Modifier.height(8.dp))
-                    Text("₹204.37", color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        "₹204.37",
+                        color = Color.White,
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                     Text("Total: ₹1337.08", color = Color.White)
                 }
             }
@@ -69,7 +83,7 @@ fun ProfileScreen(navController: NavController) {
 
             Spacer(Modifier.height(30.dp))
             Button(
-                onClick = { /* TODO logout */ },
+                onClick = { /* TODO: logout */ },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7043))
             ) {
                 Text("Log Out", color = Color.White)

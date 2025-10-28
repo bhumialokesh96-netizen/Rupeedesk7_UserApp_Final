@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.rupeedesk7.smsapp.ui.components.BottomNavigationBar
+import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun AppNavHost(navController: NavHostController = rememberNavController()) {

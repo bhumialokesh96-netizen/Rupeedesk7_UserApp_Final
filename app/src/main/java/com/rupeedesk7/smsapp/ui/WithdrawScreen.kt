@@ -1,5 +1,6 @@
 package com.rupeedesk7.smsapp.ui
 
+import com.rupeedesk7.smsapp.ui.components.BottomNavigationBar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape

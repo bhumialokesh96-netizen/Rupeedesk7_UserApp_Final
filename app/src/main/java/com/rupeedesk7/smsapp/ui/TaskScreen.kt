@@ -1,5 +1,6 @@
 package com.rupeedesk7.smsapp.ui
 
+import com.rupeedesk7.smsapp.ui.components.BottomNavigationBar
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

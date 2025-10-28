@@ -2,24 +2,28 @@ package com.rupeedesk7.smsapp.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.height
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.Icon
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Games
-import androidx.compose.material.icons.filled.TaskAlt
-import androidx.compose.material.icons.filled.WalletGiftcard
+import androidx.compose.material.icons.filled.SmartToy
+import androidx.compose.material.icons.filled.Task
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
 @Composable
 fun BottomNavigationBar(active: String, navController: NavController) {
     val items = listOf(
         NavItem("sms", "SMS", Icons.Default.Email),
-        NavItem("spin", "Spin", Icons.Default.Games),
-        NavItem("task", "Tasks", Icons.Default.TaskAlt),
+        NavItem("spin", "Spin", Icons.Default.SmartToy),
+        NavItem("task", "Tasks", Icons.Default.Task),
         NavItem("profile", "Profile", Icons.Default.AccountCircle)
     )
 
@@ -27,8 +31,9 @@ fun BottomNavigationBar(active: String, navController: NavController) {
         backgroundColor = Color.White,
         modifier = Modifier
             .fillMaxWidth()
+            .height(60.dp)
             .background(Color.White),
-        elevation = 12.dp
+        elevation = 10.dp
     ) {
         items.forEach { item ->
             val selected = active == item.route
@@ -37,7 +42,7 @@ fun BottomNavigationBar(active: String, navController: NavController) {
                     Icon(
                         imageVector = item.icon,
                         contentDescription = item.label,
-                        tint = if (selected) Color(0xFF1DB954) else Color(0xFF9E9E9E)
+                        tint = if (selected) Color(0xFF1DB954) else Color.Gray
                     )
                 },
                 label = {

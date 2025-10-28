@@ -1,15 +1,13 @@
 package com.rupeedesk7.smsapp.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -18,66 +16,35 @@ import com.rupeedesk7.smsapp.ui.components.BottomNavigationBar
 @Composable
 fun TaskScreen(navController: NavController) {
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController, "task") },
-        containerColor = Color(0xFFF9FAFB)
-    ) { innerPadding ->
+        bottomBar = { BottomNavigationBar(navController) }
+    ) { padding ->
         Column(
-            modifier = Modifier
+            Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Top
+                .background(Color(0xFFF2F4F7))
+                .padding(padding)
+                .padding(16.dp)
         ) {
-            Text(
-                text = "Daily Tasks",
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF1E88E5)
-            )
+            Text("Daily Tasks", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color(0xFF388E3C))
+            Spacer(Modifier.height(16.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            TaskItem(
-                icon = Icons.Filled.Task,
-                title = "Send 50 SMS",
-                description = "Earn ₹8.00 by sending 50 messages",
-                progress = 0.5f
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            TaskItem(
-                icon = Icons.Filled.VerifiedUser,
-                title = "Verify Your Number",
-                description = "Complete KYC to earn ₹10.00",
-                progress = 1f
-            )
+            TaskCard("Send SMS 100/day", Icons.Filled.Task)
+            TaskCard("Invite Friends", Icons.Filled.VerifiedUser)
         }
     }
 }
 
 @Composable
-fun TaskItem(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    title: String,
-    description: String,
-    progress: Float
-) {
+fun TaskCard(title: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(icon, contentDescription = null, tint = Color(0xFF4CAF50))
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-            }
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(description, color = Color.Gray, fontSize = 14.sp)
-            Spacer(modifier = Modifier.height(8.dp))
-            LinearProgressIndicator(progress = progress, color = Color(0xFF4CAF50))
+        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Icon(icon, contentDescription = title, tint = Color(0xFF388E3C))
+            Spacer(Modifier.width(16.dp))
+            Text(title, fontSize = 16.sp, fontWeight = FontWeight.Medium)
         }
     }
 }
